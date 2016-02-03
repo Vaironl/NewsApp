@@ -31,8 +31,9 @@ public class WelcomePage extends AppCompatActivity {
     private OkHttpClient client;
     private Request request;
     private ListView listView;
-    private ArrayList<String> titles;
-    private ArrayAdapter adapter;
+    private ArrayList<NewsObject> newsObjects;
+    //    private ArrayAdapter adapter;
+    private NYAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,19 +42,17 @@ public class WelcomePage extends AppCompatActivity {
 
         listView = (ListView) findViewById(R.id.listView);
 
-        titles = new ArrayList<>();
+        newsObjects = new ArrayList<>();
 
 
         initHttp();
 
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, titles);
+//        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, titles);
+
+        adapter = new NYAdapter(this, R.layout.news_row, newsObjects);
 
 
         listView.setAdapter(adapter);
-
-
-//        appendLog(search.getResult());
-
 
     }
 
@@ -92,11 +91,36 @@ public class WelcomePage extends AppCompatActivity {
                         try {
 //                            JSONArray array = new JSONArray(result);
                             JSONObject object = new JSONObject(result);
-                            JSONArray technology = object.getJSONArray("results");
+                            JSONArray resultsArray = object.getJSONArray("results");
 
-                            Log.v(TAG, "Length: " + technology.length());
-                            for (int index = 0; index < technology.length(); index++) {
-                                titles.add(technology.getJSONObject(index).getString("title"));
+//                            Log.v(TAG, "Length: " + resultsArray.length());
+                            for (int index = 0; index < resultsArray.length(); index++) {
+                                JSONObject technologyArticle = resultsArray.getJSONObject(index);
+
+                                String articleTitle = technologyArticle.getString("title");
+                                String articleDescription = technologyArticle.getString("abstract");
+                                String articleAuthor = technologyArticle.getString("byline");
+                                Object multimedia = technologyArticle.get("multimedia");
+
+                                if (multimedia.toString().isEmpty()) {
+                                    newsObjects.add(new NewsObject(articleTitle, null, articleAuthor, articleDescription));
+                                } else {
+                                    //If there is an image link get it
+                                    if (multimedia.toString().contains("Normal")) {
+                                        JSONArray multimediaCast = (JSONArray) multimedia;
+                                        JSONObject imageLink = multimediaCast.getJSONObject(2);
+                                        String imageURL = imageLink.getString("url");
+                                        newsObjects.add(new NewsObject(articleTitle, imageURL, articleAuthor, articleDescription));
+                                    } else if (multimedia.toString().contains("url")) {
+
+                                        JSONArray multimediaCast = (JSONArray) multimedia;
+                                        JSONObject imageLink = multimediaCast.getJSONObject(0);
+                                        String imageURL = imageLink.getString("url");
+                                        newsObjects.add(new NewsObject(articleTitle, imageURL, articleAuthor, articleDescription));
+
+                                    }
+                                }
+
                             }
 
                             adapter.notifyDataSetChanged();
