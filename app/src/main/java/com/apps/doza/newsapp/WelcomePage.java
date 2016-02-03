@@ -2,6 +2,8 @@ package com.apps.doza.newsapp;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -31,28 +33,40 @@ public class WelcomePage extends AppCompatActivity {
     private OkHttpClient client;
     private Request request;
     private ListView listView;
+    private RecyclerView newsRecyclerView;
     private ArrayList<NewsObject> newsObjects;
-    //    private ArrayAdapter adapter;
-    private NYAdapter adapter;
+    //    private NYAdapter adapter;
+    private RecyclerView.Adapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_welcome_page);
 
-        listView = (ListView) findViewById(R.id.listView);
+//        setContentView(R.layout.activity_welcome_page);
+        setContentView(R.layout.recycler_view_holder);
 
         newsObjects = new ArrayList<>();
 
+        newsRecyclerView = (RecyclerView) findViewById(R.id.newsRecyclerView);
 
+        //User a linear layout manager
+        layoutManager = new LinearLayoutManager(this);
+        newsRecyclerView.setLayoutManager(layoutManager);
+
+        //Recycler view adapter
+        adapter = new NYRecyclerViewAdapter(newsObjects);
+        newsRecyclerView.setAdapter(adapter);
+
+
+        //Use this if ou know that changes in the content do not change the layout size of the Recyclerview
+//        newsRecyclerView.setHasFixedSize(true);
+
+
+//        listView = (ListView) findViewById(R.id.listView);
         initHttp();
-
-//        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, titles);
-
-        adapter = new NYAdapter(this, R.layout.news_row, newsObjects);
-
-
-        listView.setAdapter(adapter);
+//        adapter = new NYAdapter(this, R.layout.news_row, newsObjects);
+//        listView.setAdapter(adapter);
 
     }
 
