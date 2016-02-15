@@ -9,8 +9,7 @@
         android:layout_height="@dimen/articleImageSize"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:scaleType="centerCrop"
-        android:src="@mipmap/hoya_hacks" />
+        android:scaleType="centerCrop" />
 
     <TextView
         android:id="@+id/articleTitle"
@@ -40,6 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@id/articleImage"
         android:layout_below="@id/articleAuthor"
         android:layout_margin="4dp"
         android:ellipsize="end"

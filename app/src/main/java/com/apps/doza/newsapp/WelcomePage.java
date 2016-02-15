@@ -1,14 +1,20 @@
 package com.apps.doza.newsapp;
 
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,12 +45,71 @@ public class WelcomePage extends AppCompatActivity {
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.section_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.sectionSelectItem:
+
+                AlertDialog.Builder b = new AlertDialog.Builder(this);
+                b.setTitle("Select a Section");
+                b.setItems(sections, new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int selected) {
+                        dialog.dismiss();
+                        selectedSection = sections[selected].toLowerCase();
+                        setTitle(selectedSection);
+                        initHttp();
+                    }
+
+                });
+
+                b.show();
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private final String[] sections =
+            {
+                    "Home",
+                    "World",
+                    "National",
+                    "Politics",
+                    "Nyregion",
+                    "Business",
+                    "Opinion",
+                    "Technology",
+                    "Science",
+                    "Health",
+                    "Sports",
+                    "Arts",
+                    "Fashion",
+                    "Dining",
+                    "Travel",
+                    "Magazine",
+                    "Realestate"};
+
+    private String selectedSection = "science";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
 //        setContentView(R.layout.activity_welcome_page);
         setContentView(R.layout.recycler_view_holder);
+
+        this.setTitle(selectedSection);
 
         newsObjects = new ArrayList<>();
 
@@ -64,7 +129,7 @@ public class WelcomePage extends AppCompatActivity {
 
 
 //        listView = (ListView) findViewById(R.id.listView);
-        initHttp();
+//        initHttp();
 //        adapter = new NYAdapter(this, R.layout.news_row, newsObjects);
 //        listView.setAdapter(adapter);
 
@@ -73,7 +138,7 @@ public class WelcomePage extends AppCompatActivity {
     private void initHttp() {
         URL url = null;
         try {
-            url = new URL("http://api.nytimes.com/svc/topstories/v1/technology.json?api-key=" + APIKEY.KEY);
+            url = new URL("http://api.nytimes.com/svc/topstories/v1/" + "technology" + ".json?api-key=" + APIKEY.KEY);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -137,7 +202,7 @@ public class WelcomePage extends AppCompatActivity {
 
                             }
 
-                            adapter.notifyDataSetChanged();
+//                            adapter.notifyDataSetChanged();
 
                         } catch (JSONException e) {
                             e.printStackTrace();
