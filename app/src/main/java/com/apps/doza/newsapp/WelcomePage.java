@@ -45,41 +45,6 @@ public class WelcomePage extends AppCompatActivity {
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.section_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.sectionSelectItem:
-
-                AlertDialog.Builder b = new AlertDialog.Builder(this);
-                b.setTitle("Select a Section");
-                b.setItems(sections, new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int selected) {
-                        dialog.dismiss();
-                        selectedSection = sections[selected].toLowerCase();
-                        setTitle(selectedSection);
-                        initHttp();
-                    }
-
-                });
-
-                b.show();
-
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
     private final String[] sections =
             {
                     "Home",
@@ -127,18 +92,51 @@ public class WelcomePage extends AppCompatActivity {
         //Use this if ou know that changes in the content do not change the layout size of the Recyclerview
 //        newsRecyclerView.setHasFixedSize(true);
 
-
-//        listView = (ListView) findViewById(R.id.listView);
-//        initHttp();
-//        adapter = new NYAdapter(this, R.layout.news_row, newsObjects);
-//        listView.setAdapter(adapter);
-
+        initHttp();
     }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.section_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.sectionSelectItem:
+
+                AlertDialog.Builder b = new AlertDialog.Builder(this);
+                b.setTitle("Select a Section");
+                b.setItems(sections, new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int selected) {
+                        dialog.dismiss();
+                        selectedSection = sections[selected].toLowerCase();
+                        setTitle(selectedSection);
+                        initHttp();
+                    }
+
+                });
+
+                b.show();
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 
     private void initHttp() {
         URL url = null;
         try {
-            url = new URL("http://api.nytimes.com/svc/topstories/v1/" + "technology" + ".json?api-key=" + APIKEY.KEY);
+            String link = "http://api.nytimes.com/svc/topstories/v1/" + "technology" + ".json?api-key=" + APIKEY.KEY;
+            url = new URL(link);
+            Log.e(TAG, link);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -168,11 +166,9 @@ public class WelcomePage extends AppCompatActivity {
                     public void run() {
 
                         try {
-//                            JSONArray array = new JSONArray(result);
                             JSONObject object = new JSONObject(result);
                             JSONArray resultsArray = object.getJSONArray("results");
 
-//                            Log.v(TAG, "Length: " + resultsArray.length());
                             for (int index = 0; index < resultsArray.length(); index++) {
                                 JSONObject technologyArticle = resultsArray.getJSONObject(index);
 
@@ -202,24 +198,12 @@ public class WelcomePage extends AppCompatActivity {
 
                             }
 
-//                            adapter.notifyDataSetChanged();
-
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
-//                        appendLog(result);
-
-
                     }
                 });
-
-
-//                Log.v(TAG, result);
-
             }
         });
     }
-
-
 }
